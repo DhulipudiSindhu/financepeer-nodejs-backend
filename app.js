@@ -5,7 +5,6 @@ app.use(express.json());
 const path = require("path");
 const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
@@ -31,32 +30,7 @@ const intializeAndServer = async () => {
 
 intializeAndServer();
 
-const validatePassword = (password) => {
-  return password.length > 4;
-};
-
-function authenticationToken(request, response, next) {
-  let jwtToken;
-  const authHeader = request.headers["authorization"];
-  if (authHeader !== undefined) {
-    jwtToken = authHeader.split(" ")[1];
-  }
-  if (jwtToken === undefined) {
-    response.status(401);
-    response.send("Invalid JWT Token");
-  } else {
-    jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
-      if (error) {
-        response.status(401);
-        response.send("Invalid JWT Token");
-      } else {
-        next();
-      }
-    });
-  }
-}
-
-//1.API
+//1.LOGIN API
 app.post("/login/", async (request, response) => {
   const { username, password } = request.body;
   const selectedUser = `SELECT * FROM user WHERE username = '${username}';`;
@@ -76,10 +50,11 @@ app.post("/login/", async (request, response) => {
   }
 });
 
+//2.POST API
 app.post("/", async (request, response) => {
   const { userId, id, title, body } = request.body;
-  console.log(userId, id, title, body);
-  const query = `INSERT INTO 
+  // console.log(userId, id, title, body);
+  const query = `INSERT INTO
         post (userId,id, title,body)
     VALUES
         (${userId},${id},'${title}','${body}');`;
@@ -88,16 +63,15 @@ app.post("/", async (request, response) => {
 });
 
 app.get("/posts", async (request, response) => {
-  const query = `select distinct userId from post;`;
+  const query = `select * from post;`;
   const userData = await db.all(query);
   response.send(userData);
 });
 
-app.get("/posts/:userId", async (request, response) => {
-  const { userId } = request.params;
-  /* console.log(userId); */
-  const postQuery = `select * from post where userId = ${userId};`;
-  const responseData = await db.all(postQuery);
-  response.send(responseData);
+app.delete("/logout", async (request, response) => {
+  const query = `DELETE FROM post;`;
+  await db.run(query);
+  response.send("Data Deleted");
 });
+
 module.exports = app;

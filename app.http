@@ -1,9 +1,9 @@
-POST http://localhost:3000/login/
+POST http://localhost:3000/login
 Content-Type: application/json
 
 {
-  "username": "abc",
-  "password": "abc@123"
+  "username": "sindhu",
+  "password": "sindhu@11"
 }
 ###
 
@@ -12,9 +12,9 @@ Content-Type: application/json
 
 
 {
-    "userId": 2,
-    "id": 3,
-    "title": "css",
+    "userId": 0,
+    "id": 0,
+    "title": "python",
     "body":"react,html,css"
   }
 
@@ -28,3 +28,4 @@ GET http://localhost:3000/posts/
 
 GET http://localhost:3000/posts/1
 ###
+DELETE http://localhost:3000/logout
